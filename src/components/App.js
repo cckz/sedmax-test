@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { Route } from "react-router-dom";
+import { Route } from 'react-router-dom';
 import styled from 'styled-components';
-import FirstPage from './FirstPage'
-import SecondPage from './SecondPage'
-import './App.css';
+import FirstPage from './FirstPage';
+import SecondPage from './SecondPage';
+import 'antd/dist/antd.css';
 
 const Container = styled.div`
   width: 960px;
   margin: auto;
-`
+`;
 
 class App extends Component {
   render() {

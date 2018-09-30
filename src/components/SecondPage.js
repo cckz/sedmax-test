@@ -1,36 +1,41 @@
-import React, {Component} from 'react';
-import {connect}  from 'react-redux';
-import {Checkbox} from 'antd';
-import {updateSelected, updateData} from '../actions';
-import TreeTemplate from './TreeTemplate'
-import TableTemplate from './TableTemplate'
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { Checkbox } from 'antd';
+import PropTypes from 'prop-types';
+import { updateSelected, updateData } from '../actions';
+import TreeTemplate from './TreeTemplate';
+import TableTemplate from './TableTemplate';
 
 
 class SecondPage extends Component {
-
   static propTypes = {
-    //from connect
+    // from connect
     data: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
         сondition: PropTypes.bool.isRequired,
         email: PropTypes.string.isRequired,
-        addresses: PropTypes.arrayOf(PropTypes.string)
-      })
+        addresses: PropTypes.arrayOf(PropTypes.string),
+      }),
     ).isRequired,
     selected: PropTypes.arrayOf(PropTypes.number),
-    updateSelected: PropTypes.func.isRequired,
-    updateData: PropTypes.func
+    updSelected: PropTypes.func.isRequired,
+    updData: PropTypes.func,
   };
 
+  static defaultProps = {
+    selected: [],
+    updData: null,
+  }
+
   handleTreeChangeSeclected = (ids) => {
-    this.props.updateSelected(ids);
+    const { updSelected } = this.props
+    updSelected(ids);
   };
 
   render() {
-    const {data, selected} = this.props;
+    const { data, selected } = this.props;
     const columns = [{
       title: 'ID',
       dataIndex: 'id',
@@ -39,7 +44,7 @@ class SecondPage extends Component {
       title: 'Name',
       dataIndex: 'name',
       key: 'name',
-      editable: true
+      editable: true,
     }, {
       title: 'Condition',
       dataIndex: 'сondition',
@@ -47,12 +52,12 @@ class SecondPage extends Component {
       editable: true,
       render: (text, record) => <Checkbox
           defaultChecked = {record.сondition}
-          />
+          />,
     }, {
       title: 'Email',
       key: 'email',
       dataIndex: 'email',
-      editable: true
+      editable: true,
     }, {
       title: 'Addresses',
       key: 'addresses',
@@ -65,7 +70,7 @@ class SecondPage extends Component {
       ),
     }];
 
-    const dataToTable = data.filter(dataItem => {return (selected.includes(dataItem.id))});
+    const dataToTable = data.filter(dataItem => (selected.includes(dataItem.id)));
 
     return (
       <div>
@@ -79,11 +84,11 @@ class SecondPage extends Component {
             columns = {columns}
         />
       </div>
-    )
+    );
   }
 }
 
 export default connect(state => ({
-    data: state.data,
-    selected: state.selected
-}), {updateData, updateSelected})(SecondPage);
+  data: state.data,
+  selected: state.selected,
+}), { updData: updateData, updSelected: updateSelected })(SecondPage);

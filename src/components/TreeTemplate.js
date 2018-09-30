@@ -1,39 +1,46 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { Tree } from 'antd';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
-const TreeNode = Tree.TreeNode;
+const {TreeNode: TreeNodeComp} = Tree;
 
 class TreeComponent extends Component {
-
-    static propTypes = {
+  static propTypes = {
     data: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
         сondition: PropTypes.bool.isRequired,
         email: PropTypes.string.isRequired,
-        addresses: PropTypes.arrayOf(PropTypes.string)
-      })
+        addresses: PropTypes.arrayOf(PropTypes.string),
+      }),
     ).isRequired,
     selected: PropTypes.arrayOf(PropTypes.number),
-    changeSelected: PropTypes.func
+    changeSelected: PropTypes.func,
   };
+
+  static defaultProps = {
+    selected: [],
+    changeSelected: null,
+  }
 
   state = {
     expandedKeys: ['0-0-0'],
     autoExpandParent: true,
     checkedKeys: [],
-    selectedKeys: [],
-    children: []
+    children: [],
   }
 
   componentDidMount() {
-    const {data, selected} = this.props;
-    const children = data.map(item => {return {title: item.name,
-                                               key: item.id}});
-    this.setState({children: children,
-                   checkedKeys: selected.map(id => id.toString())})
+    const { data, selected } = this.props;
+    const children = data.map(item => ({
+      title: item.name,
+      key: item.id,
+    }));
+    this.setState({
+      children,
+      checkedKeys: selected.map(id => id.toString()),
+    });
   }
 
   onExpand = (expandedKeys) => {
@@ -44,44 +51,44 @@ class TreeComponent extends Component {
   }
 
   onCheck = (checkedKeys) => {
-    const {changeSelected} = this.props
-    console.log('onCheck', checkedKeys);
+    const { changeSelected } = this.props;
     changeSelected(checkedKeys.map(key => +key));
-    this.setState({checkedKeys});
+    this.setState({ checkedKeys });
   }
 
-  renderTreeNodes = (data) => {
-    return data.map((item) => {
-      if (item.children) {
-        return (
-          <TreeNode title={item.title} key={item.key} dataRef={item}>
+  renderTreeNodes = data => data.map((item) => {
+    if (item.children) {
+      return (
+          <TreeNodeComp title={item.title} key={item.key} dataRef={item}>
             {this.renderTreeNodes(item.children)}
-          </TreeNode>
-        );
-      }
-      return <TreeNode {...item} />;
-    });
-  }
+          </TreeNodeComp>
+      );
+    }
+    return <TreeNodeComp {...item} />;
+  })
 
   render() {
-    const {children} = this.state    
+    const { children,
+        expandedKeys,
+        autoExpandParent,
+        checkedKeys} = this.state;
     const treeData = [{
       title: 'Random System LTD',
       key: '0-0',
       children: [{
         title: 'Workers',
         key: '0-0-0',
-        children: children,
+        children,
       }],
     }];
     return (
       <Tree
         checkable
         onExpand={this.onExpand}
-        expandedKeys={this.state.expandedKeys}
-        autoExpandParent={this.state.autoExpandParent}
+        expandedKeys={expandedKeys}
+        autoExpandParent={autoExpandParent}
         onCheck={this.onCheck}
-        checkedKeys={this.state.checkedKeys}
+        checkedKeys={checkedKeys}
         onSelect={this.onSelect}
       >
         {this.renderTreeNodes(treeData)}
